@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+// package main;
+
+message IbeamMessage {
+  bytes data = 1; // This could potentially be a proto3 any, but might break
+                  // nanopb compatibility...
+}
+
+message IbeamMessageData {
+  oneof data {
+    GetRequest get = 1;
+    SetRequest set = 2;
+    ParameterResponse param = 3;
+  }
+}
+
+// Service Style Messages ------------------------------------
+/*
+service DeviceService {
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Get(GetRequest) returns (ParameterResponse);
+  rpc Set(SetRequest) returns (ParameterResponse);
+
+  rpc Subscribe(SubscribeRequest) returns (SubscriptionStatusResponse);
+  rpc Unsubscribe(UnsubscribeRequest) returns (SubscriptionStatusResponse);
+}
+*/
+
+message PingRequest { int32 pingCounter = 1; }
+message PingResponse { int32 pongCounter = 1; }
+
+message GetRequest { int32 valueId = 1; }
+message SetRequest {
+  int32 valueId = 1;
+  Parameter param = 2; // TODO: This could be different, shorter
+}
+
+message ParameterResponse {
+  int32 valueId = 1;
+  Parameter param = 2;
+}
+// Datatypes ------------------------------------
+
+message Parameter {
+  enum paramType {
+    numberType = 0;
+    floatingType = 1;
+    optType = 2;
+  }
+  int32 number = 1;
+  float floating = 2;
+  repeated ParamOption options = 3;
+}
+
+message ParamOption {
+  int32 optionId = 1;
+  string optionValue = 2;
+}
